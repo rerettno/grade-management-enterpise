@@ -6,6 +6,7 @@ import type { DragItem } from "./types";
 import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { DropTargetMonitor, DragSourceMonitor } from "react-dnd";
+import { useGradeConfigStore } from "@/stores/gradeConfigStore";
 
 interface Props {
   item: GradeItem;
@@ -15,6 +16,9 @@ interface Props {
 
 export default function ConfigItem({ item, index, moveCard }: Props) {
   const ref = useRef<HTMLDivElement>(null);
+  const updatePercentage = useGradeConfigStore(
+    (state) => state.updatePercentage
+  );
 
   const [, drop] = useDrop<DragItem, void, unknown>({
     accept: "card",
@@ -38,11 +42,7 @@ export default function ConfigItem({ item, index, moveCard }: Props) {
     },
   });
 
-  const [{ isDragging }, drag] = useDrag<
-    DragItem,
-    void,
-    { isDragging: boolean }
-  >({
+  const [{ isDragging }, drag] = useDrag({
     type: "card",
     item: { index, id: item.id },
     collect: (monitor: DragSourceMonitor) => ({
@@ -67,7 +67,7 @@ export default function ConfigItem({ item, index, moveCard }: Props) {
         min={0}
         max={100}
         value={item.percentage}
-        readOnly
+        onChange={(e) => updatePercentage(item.id, Number(e.target.value))}
         className="w-32"
       />
       <span>{item.percentage}%</span>

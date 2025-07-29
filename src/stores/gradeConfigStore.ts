@@ -10,6 +10,7 @@ export interface GradeItem {
 interface GradeConfigState {
   items: GradeItem[];
   setItems: (items: GradeItem[]) => void;
+  updatePercentage: (id: string, newPercentage: number) => void;
 }
 
 export const useGradeConfigStore = create<GradeConfigState>((set) => ({
@@ -21,4 +22,10 @@ export const useGradeConfigStore = create<GradeConfigState>((set) => ({
     { id: "5", name: "Praktikum", percentage: 10 },
   ],
   setItems: (items) => set({ items }),
+  updatePercentage: (id, newPercentage) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id ? { ...item, percentage: newPercentage } : item
+      ),
+    })),
 }));
