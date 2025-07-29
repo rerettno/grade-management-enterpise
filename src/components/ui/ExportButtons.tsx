@@ -1,10 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import { useClassStore } from "@/stores/classStore";
 import Papa from "papaparse";
 import jsPDF from "jspdf";
 
-export default function ExportButtons() {
+interface ExportButtonsProps {
+  onExportCSVRef?: (fn: () => void) => void;
+  onExportJSONRef?: (fn: () => void) => void;
+  onExportPDFRef?: (fn: () => void) => void;
+}
+
+export default function ExportButtons({
+  onExportCSVRef,
+  onExportJSONRef,
+  onExportPDFRef,
+}: ExportButtonsProps) {
   const classes = useClassStore((state) => state.classes);
 
   const exportCSV = () => {
@@ -56,6 +67,12 @@ export default function ExportButtons() {
     link.click();
     document.body.removeChild(link);
   };
+
+  useEffect(() => {
+    if (onExportCSVRef) onExportCSVRef(exportCSV);
+    if (onExportJSONRef) onExportJSONRef(exportJSON);
+    if (onExportPDFRef) onExportPDFRef(exportPDF);
+  }, [onExportCSVRef, onExportJSONRef, onExportPDFRef]);
 
   return (
     <div className="flex gap-2 mb-4">
