@@ -9,8 +9,11 @@ export interface GradeItem {
 
 interface GradeConfigState {
   items: GradeItem[];
+  history: GradeItem[][];
   setItems: (items: GradeItem[]) => void;
   updatePercentage: (id: string, newPercentage: number) => void;
+  saveVersion: () => void;
+  rollback: () => void;
 }
 
 export const useGradeConfigStore = create<GradeConfigState>((set) => ({
@@ -21,6 +24,7 @@ export const useGradeConfigStore = create<GradeConfigState>((set) => ({
     { id: "4", name: "Kehadiran", percentage: 15 },
     { id: "5", name: "Praktikum", percentage: 10 },
   ],
+  history: [],
   setItems: (items) => set({ items }),
   updatePercentage: (id, newPercentage) =>
     set((state) => ({
@@ -28,4 +32,17 @@ export const useGradeConfigStore = create<GradeConfigState>((set) => ({
         item.id === id ? { ...item, percentage: newPercentage } : item
       ),
     })),
+  saveVersion: () =>
+    set((state) => ({
+      history: [...state.history, JSON.parse(JSON.stringify(state.items))],
+    })),
+  rollback: () =>
+    set((state) => {
+      if (state.history.length === 0) return {};
+      const lastVersion = state.history[state.history.length - 1];
+      return {
+        items: lastVersion,
+        history: state.history.slice(0, -1),
+      };
+    }),
 }));

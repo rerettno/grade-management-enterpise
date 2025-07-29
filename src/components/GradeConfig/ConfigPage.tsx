@@ -10,6 +10,9 @@ import { gradeConfigSchema } from "@/lib/validators/gradeConfigSchema";
 export default function ConfigPage() {
   const items = useGradeConfigStore((state) => state.items);
   const setItems = useGradeConfigStore((state) => state.setItems);
+  const saveVersion = useGradeConfigStore((state) => state.saveVersion);
+  const rollback = useGradeConfigStore((state) => state.rollback);
+  const history = useGradeConfigStore((state) => state.history);
 
   const moveCard = (dragIndex: number, hoverIndex: number) => {
     const updated = [...items];
@@ -55,6 +58,24 @@ export default function ConfigPage() {
             Data tidak valid: {validation.error.message}
           </p>
         )}
+        <div className="flex gap-2 mt-2">
+          <button
+            onClick={saveVersion}
+            className="px-3 py-1 bg-blue-500 text-white rounded"
+          >
+            Simpan Versi
+          </button>
+          <button
+            onClick={rollback}
+            disabled={history.length === 0}
+            className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
+          >
+            Rollback
+          </button>
+        </div>
+        <p className="text-xs text-gray-500">
+          Total versi tersimpan: {history.length}
+        </p>
       </div>
       <PreviewBox />
     </div>
