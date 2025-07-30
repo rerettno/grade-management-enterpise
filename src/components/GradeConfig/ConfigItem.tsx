@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useDrag, useDrop } from "react-dnd";
 import type { DropTargetMonitor, DragSourceMonitor } from "react-dnd";
 import { useGradeConfigStore } from "@/stores/gradeConfigStore";
+import { Box, Typography, Slider, Paper } from "@mui/material";
 
 interface Props {
   item: GradeItem;
@@ -52,34 +53,43 @@ export default function ConfigItem({ item, index, moveCard, errors }: Props) {
 
   drop(drag(ref));
   return (
-    <div
+    <Paper
       ref={ref}
-      className={`flex flex-col border p-2 rounded shadow gap-1 cursor-move ${
-        isDragging ? "opacity-50" : "opacity-100"
-      }`}
+      elevation={2}
+      sx={{
+        p: 2,
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "move",
+        display: "flex",
+        flexDirection: "column",
+        gap: 1,
+      }}
     >
-      <div className="flex w-full items-center gap-4">
-        <div className="flex-1">
-          <p className="font-semibold">{item.name}</p>
-        </div>
-        <input
-          type="range"
+      <Box display="flex" alignItems="center" gap={2}>
+        <Box flex={1}>
+          <Typography fontWeight="bold">{item.name}</Typography>
+        </Box>
+        <Slider
           min={0}
           max={100}
           value={item.percentage}
-          onChange={(e) => updatePercentage(item.id, Number(e.target.value))}
-          className="w-32"
+          onChange={(_, value) =>
+            updatePercentage(item.id, Array.isArray(value) ? value[0] : value)
+          }
+          sx={{ width: 120 }}
+          size="small"
         />
-
-        <span>{item.percentage}%</span>
-      </div>
+        <Typography>{item.percentage}%</Typography>
+      </Box>
       {errors.length > 0 && (
-        <div className="text-red-500 text-xs">
+        <Box color="error.main" fontSize="0.75rem">
           {errors.map((e, idx) => (
-            <p key={idx}>{e}</p>
+            <Typography key={idx} variant="caption" display="block">
+              {e}
+            </Typography>
           ))}
-        </div>
+        </Box>
       )}
-    </div>
+    </Paper>
   );
 }

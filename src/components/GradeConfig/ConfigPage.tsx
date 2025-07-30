@@ -4,8 +4,18 @@ import { useState, useMemo } from "react";
 import { useGradeConfigStore } from "@/stores/gradeConfigStore";
 import ConfigItem from "./ConfigItem";
 import PreviewBox from "./PreviewBox";
-import { gradeConfigSchema } from "@/lib/validators/gradeConfigSchema";
 import CompareBox from "./CompareBox";
+import { gradeConfigSchema } from "@/lib/validators/gradeConfigSchema";
+
+import {
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  TextField,
+  Box,
+  Stack,
+} from "@mui/material";
 
 export default function ConfigPage() {
   const items = useGradeConfigStore((state) => state.items);
@@ -33,10 +43,10 @@ export default function ConfigPage() {
     [items]
   );
 
-  // Validasi pakai Zod
+  // Validasi Zod
   const validation = gradeConfigSchema.safeParse({ items });
 
-  // Map error per item
+  // Error per item
   const itemErrors: Record<number, string[]> = {};
   if (!validation.success) {
     validation.error.issues.forEach((issue) => {
@@ -49,11 +59,11 @@ export default function ConfigPage() {
     });
   }
 
-  // Error global (contoh: total bukan 100)
+  // Error global
   const globalErrors = total !== 100 ? ["Total harus tepat 100%"] : [];
 
   return (
-    <div className="space-y-4">
+    <Box className="space-y-4">
       {items.map((item, index) => (
         <ConfigItem
           key={item.id}
@@ -64,77 +74,87 @@ export default function ConfigPage() {
         />
       ))}
 
-      <div className="mt-4 p-4 border rounded space-y-2">
-        <p className="font-semibold transition-colors duration-300">
-          🔍 Total persentase:{" "}
-          <span className={total === 100 ? "text-green-600" : "text-red-600"}>
-            {total}%
-          </span>
-        </p>
+      {/* Card: summary + version control */}
+      <Card variant="outlined">
+        <CardContent className="space-y-2">
+          <Typography variant="h6">
+            🔍 Total persentase:{" "}
+            <span className={total === 100 ? "text-green-600" : "text-red-600"}>
+              {total}%
+            </span>
+          </Typography>
 
-        {globalErrors.map((msg, idx) => (
-          <p key={idx} className="text-red-500 text-sm">
-            {msg}
-          </p>
-        ))}
+          {globalErrors.map((msg, idx) => (
+            <Typography key={idx} color="error" variant="body2">
+              {msg}
+            </Typography>
+          ))}
 
-        <div className="flex gap-2 mt-2">
-          <button
-            onClick={saveVersion}
-            className="px-3 py-1 bg-blue-500 text-white rounded"
-          >
-            Simpan Versi
-          </button>
-          <button
-            onClick={rollback}
-            disabled={history.length === 0}
-            className="px-3 py-1 bg-yellow-500 text-white rounded disabled:opacity-50"
-          >
-            Rollback
-          </button>
-        </div>
+          <Stack direction="row" spacing={2} className="mt-2 flex-wrap">
+            <Button variant="contained" color="primary" onClick={saveVersion}>
+              Simpan Versi
+            </Button>
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={rollback}
+              disabled={history.length === 0}
+            >
+              Rollback
+            </Button>
+          </Stack>
 
-        <p className="text-xs text-gray-500">
-          Total versi tersimpan: {history.length}
-        </p>
-      </div>
+          <Typography variant="caption" color="text.secondary">
+            Total versi tersimpan: {history.length}
+          </Typography>
+        </CardContent>
+      </Card>
 
-      <div className="mt-4 p-4 border rounded space-y-2">
-        <p className="font-semibold">💾 Template Konfigurasi</p>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={templateName}
-            onChange={(e) => setTemplateName(e.target.value)}
-            placeholder="Nama template"
-            className="border p-1 rounded"
-          />
-          <button
-            onClick={() => saveTemplate(templateName)}
-            disabled={!templateName}
-            className="px-2 py-1 bg-green-600 text-white rounded disabled:opacity-50"
-          >
-            Simpan Template
-          </button>
-        </div>
-        {Object.keys(templates).length > 0 && (
-          <div className="flex gap-2 flex-wrap">
-            {Object.keys(templates).map((name) => (
-              <button
-                key={name}
-                onClick={() => loadTemplate(name)}
-                className="px-2 py-1 bg-gray-300 rounded"
-              >
-                Load: {name}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Card: Template */}
+      <Card variant="outlined">
+        <CardContent className="space-y-2">
+          <Typography variant="h6">💾 Template Konfigurasi</Typography>
+
+          <Stack direction="row" spacing={2} className="flex-wrap">
+            <TextField
+              size="small"
+              label="Nama template"
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+            />
+            <Button
+              variant="contained"
+              color="success"
+              disabled={!templateName.trim()}
+              onClick={() => saveTemplate(templateName)}
+            >
+              Simpan Template
+            </Button>
+          </Stack>
+
+          {Object.keys(templates).length > 0 && (
+            <Stack direction="row" spacing={1} className="flex-wrap">
+              {Object.keys(templates).map((name) => (
+                <Button
+                  key={name}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => loadTemplate(name)}
+                >
+                  Load: {name}
+                </Button>
+              ))}
+            </Stack>
+          )}
+
+          <Typography variant="caption" color="text.secondary">
+            Total template: {Object.keys(templates).length}
+          </Typography>
+        </CardContent>
+      </Card>
 
       <PreviewBox />
-
       <CompareBox />
-    </div>
+    </Box>
   );
 }

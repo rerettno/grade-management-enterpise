@@ -2,63 +2,90 @@
 
 import { useState } from "react";
 import { useGradeConfigStore } from "@/stores/gradeConfigStore";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Select,
+  MenuItem,
+  List,
+  ListItem,
+  ListItemText,
+  Box,
+} from "@mui/material";
 
 export default function CompareBox() {
   const currentItems = useGradeConfigStore((s) => s.items);
   const templates = useGradeConfigStore((s) => s.templates);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | "">("");
 
   const selectedItems = selectedTemplate ? templates[selectedTemplate] : [];
 
   return (
-    <div className="mt-4 p-4 border rounded space-y-2">
-      <p className="font-semibold">🔍 Compare Tool</p>
+    <Card variant="outlined">
+      <CardContent className="space-y-2">
+        <Typography variant="h6">🔍 Compare Tool</Typography>
 
-      <select
-        value={selectedTemplate || ""}
-        onChange={(e) => setSelectedTemplate(e.target.value || null)}
-        className="border p-1 rounded"
-      >
-        <option value="">Pilih template...</option>
-        {Object.keys(templates).map((name) => (
-          <option key={name} value={name}>
-            {name}
-          </option>
-        ))}
-      </select>
+        <Select
+          size="small"
+          fullWidth
+          displayEmpty
+          value={selectedTemplate}
+          onChange={(e) => setSelectedTemplate(e.target.value)}
+        >
+          <MenuItem value="">
+            <em>Pilih template...</em>
+          </MenuItem>
+          {Object.keys(templates).map((name) => (
+            <MenuItem key={name} value={name}>
+              {name}
+            </MenuItem>
+          ))}
+        </Select>
 
-      {selectedTemplate && (
-        <div className="grid grid-cols-2 gap-4 mt-2">
-          <div>
-            <p className="font-semibold">Current</p>
-            <ul className="space-y-1">
-              {currentItems.map((item) => (
-                <li key={item.id} className="text-sm">
-                  {item.name}: {item.percentage}%
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <p className="font-semibold">Template: {selectedTemplate}</p>
-            <ul className="space-y-1">
-              {selectedItems.map((item) => (
-                <li
-                  key={item.id}
-                  className={`text-sm ${
+        {selectedTemplate && (
+          <div className="flex flex-col md:flex-row gap-4 mt-2">
+            <div className="flex-1">
+              <Typography fontWeight="bold">Current</Typography>
+              <List dense>
+                {currentItems.map((item) => (
+                  <ListItem key={item.id}>
+                    <ListItemText
+                      primary={`${item.name}: ${item.percentage}%`}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </div>
+            <div className="flex-1">
+              <Typography fontWeight="bold">
+                Template: {selectedTemplate}
+              </Typography>
+              <List dense>
+                {selectedItems.map((item) => {
+                  const changed =
                     currentItems.find((c) => c.id === item.id)?.percentage !==
-                    item.percentage
-                      ? "text-red-500"
-                      : ""
-                  }`}
-                >
-                  {item.name}: {item.percentage}%
-                </li>
-              ))}
-            </ul>
+                    item.percentage;
+                  return (
+                    <ListItem key={item.id}>
+                      <ListItemText
+                        primary={
+                          <Box
+                            component="span"
+                            color={changed ? "error.main" : "inherit"}
+                          >
+                            {item.name}: {item.percentage}%
+                          </Box>
+                        }
+                      />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

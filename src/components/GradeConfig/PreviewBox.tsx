@@ -1,12 +1,21 @@
-// src/components/GradeConfig/PreviewBox.tsx
 "use client";
 
 import { useGradeConfigStore } from "@/stores/gradeConfigStore";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableHead,
+} from "@mui/material";
 
 export default function PreviewBox() {
   const items = useGradeConfigStore((state) => state.items);
 
-  // Data dummy score per komponen (misalnya skor asli 80)
+  // Dummy scores
   const dummyScores: Record<string, number> = {
     "1": 80,
     "2": 75,
@@ -15,35 +24,64 @@ export default function PreviewBox() {
     "5": 88,
   };
 
-  // Hitung nilai akhir per komponen & total
+  // Kalkulasi
   const results = items.map((item) => {
     const rawScore = dummyScores[item.id] ?? 0;
-    // Kalkulasi: score * (percentage / 100)
     const finalScore = (rawScore * item.percentage) / 100;
     return {
       name: item.name,
       rawScore,
       percentage: item.percentage,
-      finalScore: Math.round(finalScore), // dibulatkan
+      finalScore: Math.round(finalScore),
     };
   });
 
   const total = results.reduce((sum, r) => sum + r.finalScore, 0);
 
   return (
-    <div className="p-4 border rounded mt-4">
-      <h3 className="font-semibold mb-2">🧮 Pratinjau Hitung (dummy)</h3>
-      <ul className="space-y-1">
-        {results.map((r, idx) => (
-          <li key={idx} className="flex justify-between text-sm">
-            <span>
-              {r.name}: skor {r.rawScore} × {r.percentage}%
-            </span>
-            <span className="font-mono">{r.finalScore}</span>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-2 font-semibold">⭐ TOTAL: {total}</p>
-    </div>
+    <Card variant="outlined">
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          🧮 Pratinjau Hitung (dummy)
+        </Typography>
+
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>Komponen</TableCell>
+              <TableCell align="center">Skor</TableCell>
+              <TableCell align="center">Persentase</TableCell>
+              <TableCell align="center">Hasil</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {results.map((r, idx) => (
+              <TableRow key={idx}>
+                <TableCell>{r.name}</TableCell>
+                <TableCell align="center">{r.rawScore}</TableCell>
+                <TableCell align="center">{r.percentage}%</TableCell>
+                <TableCell
+                  align="center"
+                  style={{ fontFamily: "monospace", fontWeight: "bold" }}
+                >
+                  {r.finalScore}
+                </TableCell>
+              </TableRow>
+            ))}
+            <TableRow>
+              <TableCell colSpan={3}>
+                <Typography fontWeight="bold">⭐ TOTAL</Typography>
+              </TableCell>
+              <TableCell
+                align="center"
+                style={{ fontFamily: "monospace", fontWeight: "bold" }}
+              >
+                {total}
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
