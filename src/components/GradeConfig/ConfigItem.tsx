@@ -12,9 +12,9 @@ interface Props {
   item: GradeItem;
   index: number;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
+  errors: string[];
 }
-
-export default function ConfigItem({ item, index, moveCard }: Props) {
+export default function ConfigItem({ item, index, moveCard, errors }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const updatePercentage = useGradeConfigStore(
     (state) => state.updatePercentage
@@ -51,26 +51,35 @@ export default function ConfigItem({ item, index, moveCard }: Props) {
   });
 
   drop(drag(ref));
-
   return (
     <div
       ref={ref}
-      className={`flex items-center border p-2 rounded shadow gap-4 cursor-move ${
+      className={`flex flex-col border p-2 rounded shadow gap-1 cursor-move ${
         isDragging ? "opacity-50" : "opacity-100"
       }`}
     >
-      <div className="flex-1">
-        <p className="font-semibold">{item.name}</p>
+      <div className="flex w-full items-center gap-4">
+        <div className="flex-1">
+          <p className="font-semibold">{item.name}</p>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={item.percentage}
+          onChange={(e) => updatePercentage(item.id, Number(e.target.value))}
+          className="w-32"
+        />
+
+        <span>{item.percentage}%</span>
       </div>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={item.percentage}
-        onChange={(e) => updatePercentage(item.id, Number(e.target.value))}
-        className="w-32"
-      />
-      <span>{item.percentage}%</span>
+      {errors.length > 0 && (
+        <div className="text-red-500 text-xs">
+          {errors.map((e, idx) => (
+            <p key={idx}>{e}</p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
