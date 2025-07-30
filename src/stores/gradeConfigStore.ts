@@ -10,13 +10,16 @@ export interface GradeItem {
 interface GradeConfigState {
   items: GradeItem[];
   history: GradeItem[][];
+  templates: Record<string, GradeItem[]>;
   setItems: (items: GradeItem[]) => void;
   updatePercentage: (id: string, newPercentage: number) => void;
   saveVersion: () => void;
   rollback: () => void;
+  saveTemplate: (name: string) => void;
+  loadTemplate: (name: string) => void;
 }
 
-export const useGradeConfigStore = create<GradeConfigState>((set) => ({
+export const useGradeConfigStore = create<GradeConfigState>((set, get) => ({
   items: [
     { id: "1", name: "Tugas", percentage: 20 },
     { id: "2", name: "UTS", percentage: 25 },
@@ -25,6 +28,8 @@ export const useGradeConfigStore = create<GradeConfigState>((set) => ({
     { id: "5", name: "Praktikum", percentage: 10 },
   ],
   history: [],
+  templates: {},
+
   setItems: (items) => set({ items }),
   updatePercentage: (id, newPercentage) =>
     set((state) => ({
@@ -36,13 +41,31 @@ export const useGradeConfigStore = create<GradeConfigState>((set) => ({
     set((state) => ({
       history: [...state.history, JSON.parse(JSON.stringify(state.items))],
     })),
-  rollback: () =>
-    set((state) => {
-      if (state.history.length === 0) return {};
-      const lastVersion = state.history[state.history.length - 1];
-      return {
-        items: lastVersion,
-        history: state.history.slice(0, -1),
-      };
-    }),
+  rollback: () => {
+    const { history } = get();
+    if (history.length === 0) return;
+
+    const newHistory = [...history];
+    const lastVersion = newHistory.pop();
+    if (!lastVersion) return;
+
+    set({
+      items: lastVersion,
+      history: newHistory,
+    });
+  },
+
+  saveTemplate: (name) =>
+    set((state) => ({
+      templates: {
+        ...state.templates,
+        [name]: JSON.parse(JSON.stringify(state.items)),
+      },
+    })),
+  loadTemplate: (name) => {
+    const tmpl = get().templates[name];
+    if (tmpl) {
+      set({ items: JSON.parse(JSON.stringify(tmpl)) });
+    }
+  },
 }));
