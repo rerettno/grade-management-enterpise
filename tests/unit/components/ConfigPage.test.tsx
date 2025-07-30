@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import ConfigPage from "../ConfigPage";
+import ConfigPage from "@/components/GradeConfig/ConfigPage";
 import { useGradeConfigStore } from "@/stores/gradeConfigStore";
 import "@testing-library/jest-dom";
 

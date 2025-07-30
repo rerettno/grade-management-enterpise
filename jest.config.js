@@ -3,6 +3,9 @@ module.exports = {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
+  testMatch: [
+    "**/tests/unit/**/*.(test|spec).(ts|tsx|js)", // cari test di tests/unit
+  ],
   testPathIgnorePatterns: ["/node_modules/", "/.next/", "/out/"],
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
