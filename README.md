@@ -24,13 +24,13 @@ Dibangun dengan **Next.js 14**, **TypeScript**, **Zustand**, **React Query**, da
    cd grade-management-enterprise
 
 
-5. **Install dependencies**
+3. **Install dependencies**
    
    ```bash
    npm install
 
-4.Jalankan development server
-    ```bash
+4. **Jalankan development server**
+   ```bash
       npm run dev
 
 5.Akses di browser
