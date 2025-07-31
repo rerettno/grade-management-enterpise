@@ -4,12 +4,13 @@ import { useGradeStore } from "@/stores/gradeStore";
 import GradeRow from "./GradeRow";
 import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
 import { GradeComponent } from "@/types/grade";
+import { useGradePolling } from "@/hooks/useGradePolling";
 
 export default function GradeInputTable() {
   const students = useGradeStore((s) => s.students);
 
   const columns: GradeComponent[] = ["Tugas", "Quiz", "UTS", "UAS"];
-
+  useGradePolling(5000); // ← tambahkan ini
   // define urutan kolom
   useKeyboardNavigation(
     students.map((s) => s.nim),

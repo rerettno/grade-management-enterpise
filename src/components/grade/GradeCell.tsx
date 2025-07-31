@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { useGradeStore } from "@/stores/gradeStore";
 import { useGradeMutation } from "@/hooks/userGradeMutation";
+import { useBulkGradeMutation } from "@/hooks/useBulkGradeMutation";
 import { GradeComponent } from "@/types/grade";
 
 type Props = {
@@ -17,6 +18,8 @@ export default function GradeCell({ value, nim, component }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const mutation = useGradeMutation();
+  const { applyBulk } = useBulkGradeMutation();
+
   const selectedCells = useGradeStore((s) => s.selectedCells);
   const focusedCell = useGradeStore((s) => s.focusedCell);
   const setFocusedCell = useGradeStore((s) => s.setFocusedCell);
@@ -50,9 +53,12 @@ export default function GradeCell({ value, nim, component }: Props) {
       const number = Number(raw);
 
       if (!isNaN(number)) {
-        selectedCells.forEach((cell) => {
-          updateGrade(cell.nim, cell.component, number);
-        });
+        const payloads = selectedCells.map((cell) => ({
+          nim: cell.nim,
+          component: cell.component,
+          value: number,
+        }));
+        applyBulk(payloads); // ✅ jalan async per cell
       } else {
         alert("Clipboard tidak valid. Harus angka.");
       }
@@ -68,7 +74,7 @@ export default function GradeCell({ value, nim, component }: Props) {
       window.removeEventListener("paste", handlePaste);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [selectedCells, updateGrade, clearSelection]);
+  }, [selectedCells, applyBulk, clearSelection]);
 
   const handleClick = () => {
     setFocusedCell({ nim, component });
