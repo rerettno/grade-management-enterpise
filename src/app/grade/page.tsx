@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useGradeStore } from "@/stores/gradeStore";
 import GradeInputTable from "@/components/grade/GradeInputTable";
 import { StudentGrade } from "@/types/grade";
+import AuditLogPanel from "@/components/grade/AuditPanel";
 
 const mockStudents: StudentGrade[] = [
   {
@@ -34,6 +35,7 @@ export default function GradePage() {
     <div className="p-6">
       <h1 className="text-xl font-semibold mb-4">Input Nilai Mahasiswa</h1>
       <GradeInputTable />
+      <AuditLogPanel />
     </div>
   );
 }

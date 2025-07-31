@@ -6,6 +6,14 @@ type SelectedCell = {
   component: GradeComponent;
 };
 
+type AuditLogEntry = {
+  nim: string;
+  component: GradeComponent;
+  oldValue: number;
+  newValue: number;
+  timestamp: number;
+};
+
 type GradeState = {
   students: StudentGrade[];
   selectedCells: SelectedCell[];
@@ -16,25 +24,49 @@ type GradeState = {
   applyBulkValue: (value: number) => void;
   focusedCell: SelectedCell | null;
   setFocusedCell: (coord: SelectedCell | null) => void;
+  auditLogs: AuditLogEntry[];
+  logAudit: (entry: AuditLogEntry) => void;
 };
 
 export const useGradeStore = create<GradeState>((set, get) => ({
   students: [],
   selectedCells: [],
+  auditLogs: [],
+
+  logAudit: (entry) =>
+    set((state) => ({
+      auditLogs: [...state.auditLogs, entry],
+    })),
 
   setStudents: (data) => set({ students: data }),
 
-  updateGrade: (nim, component, value) =>
-    set((state) => ({
-      students: state.students.map((s) =>
-        s.nim === nim
-          ? {
-              ...s,
-              grades: { ...s.grades, [component]: value },
-            }
-          : s
-      ),
-    })),
+  updateGrade: (nim, component, value) => {
+    const { students, logAudit } = get();
+    const updatedStudents = students.map((s) => {
+      if (s.nim === nim) {
+        const oldValue = s.grades[component];
+        const newValue = value;
+
+        if (oldValue !== newValue) {
+          logAudit({
+            nim,
+            component,
+            oldValue,
+            newValue,
+            timestamp: Date.now(),
+          });
+        }
+
+        return {
+          ...s,
+          grades: { ...s.grades, [component]: newValue },
+        };
+      }
+      return s;
+    });
+
+    set({ students: updatedStudents });
+  },
 
   toggleCellSelection: (nim, component) => {
     const selected = get().selectedCells;
@@ -55,6 +87,7 @@ export const useGradeStore = create<GradeState>((set, get) => ({
       updateGrade(nim, component, value);
     });
   },
+
   focusedCell: null,
   setFocusedCell: (coord) => set({ focusedCell: coord }),
 }));
