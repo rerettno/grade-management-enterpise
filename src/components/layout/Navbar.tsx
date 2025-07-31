@@ -9,6 +9,7 @@ export default function Navbar() {
         <li>
           <Link href="/">Dashboard</Link>
           <Link href="/grade">Input Nilai </Link>
+          <Link href="/grade-config">Grade-Config</Link>
         </li>
       </ul>
     </nav>
