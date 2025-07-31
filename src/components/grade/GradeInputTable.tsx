@@ -2,9 +2,19 @@
 
 import { useGradeStore } from "@/stores/gradeStore";
 import GradeRow from "./GradeRow";
+import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
+import { GradeComponent } from "@/types/grade";
 
 export default function GradeInputTable() {
   const students = useGradeStore((s) => s.students);
+
+  const columns: GradeComponent[] = ["Tugas", "Quiz", "UTS", "UAS"];
+
+  // define urutan kolom
+  useKeyboardNavigation(
+    students.map((s) => s.nim),
+    columns
+  );
 
   return (
     <div className="overflow-x-auto border rounded-lg shadow bg-white mt-6">

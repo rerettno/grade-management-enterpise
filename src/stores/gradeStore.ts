@@ -14,6 +14,8 @@ type GradeState = {
   toggleCellSelection: (nim: string, component: GradeComponent) => void;
   clearSelection: () => void;
   applyBulkValue: (value: number) => void;
+  focusedCell: SelectedCell | null;
+  setFocusedCell: (coord: SelectedCell | null) => void;
 };
 
 export const useGradeStore = create<GradeState>((set, get) => ({
@@ -53,4 +55,6 @@ export const useGradeStore = create<GradeState>((set, get) => ({
       updateGrade(nim, component, value);
     });
   },
+  focusedCell: null,
+  setFocusedCell: (coord) => set({ focusedCell: coord }),
 }));
