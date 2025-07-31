@@ -1,10 +1,12 @@
-import Image from "next/image";
-import GradeConfigPage from "./grade-config/page";
+
+import Navbar from "@/components/layout/Navbar";
+import DashboardPage from "./dashboard/page";
 
 export default function Home() {
   return (
-    <>
-      <GradeConfigPage />
-    </>
+    <div>
+      <Navbar />
+      <DashboardPage />
+    </div>
   );
 }
