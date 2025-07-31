@@ -17,15 +17,22 @@ Dibangun dengan **Next.js 14**, **TypeScript**, **Zustand**, **React Query**, da
 1. **Clone repository**
    ```bash
    git clone https://github.com/username/grade-management-enterprise.git
-2 Masuk ke folder project
-```bash
-cd grade-management-enterprise
-3. Install dependencies
-```bash
-npm install
+
+2. **Masuk ke folder project**
+   
+   ```bash
+   cd grade-management-enterprise
+
+
+5. **Install dependencies**
+   
+   ```bash
+   npm install
+
 4.Jalankan development server
-```bash
-npm run dev
+    ```bash
+      npm run dev
+
 5.Akses di browser
-```bash
-http://localhost:3000
+   ```bash
+   http://localhost:3000
