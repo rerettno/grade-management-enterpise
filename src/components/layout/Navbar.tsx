@@ -8,7 +8,7 @@ export default function Navbar() {
       <ul className="flex space-x-6">
         <li>
           <Link href="/">Dashboard</Link>
-          <Link href="/grade">Input Nilai </Link>
+          <Link href="/grade-input-table">Input Nilai </Link>
           <Link href="/grade-config">Grade-Config</Link>
         </li>
       </ul>
