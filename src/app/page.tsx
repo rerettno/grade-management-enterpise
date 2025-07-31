@@ -1,3 +1,4 @@
+
 import Navbar from "@/components/layout/navbar";
 import DashboardPage from "./dashboard/page";
 
@@ -8,4 +9,5 @@ export default function Home() {
       <DashboardPage />
     </div>
   );
+
 }
